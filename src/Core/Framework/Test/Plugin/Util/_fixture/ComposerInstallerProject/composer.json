@@ -1,0 +1,34 @@
+{
+    "name": "swag/test-composer-project",
+    "description": "Test description for a composer project",
+    "version": "v1.0.1",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "shopware AG",
+            "role": "Manufacturer"
+        }
+    ],
+    "require": {
+        "composer-runtime-api": "^2.0",
+        "oomphinc/composer-installers-extender": "^2.0",
+
+        "shopware/platform": "6.4.*@dev",
+        "swag/test": "v1.0.1"
+    },
+    "extra": {
+        "installer-types": [
+            "shopware-platform-plugin"
+        ],
+        "installer-paths": {
+            "custom/plugins/SwagTest": ["swag/test"]
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true,
+            "oomphinc/composer-installers-extender": true
+        }
+    }
+}

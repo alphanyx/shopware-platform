@@ -1,0 +1,8 @@
+---
+title: Fix plugin discovery while using custom composer/installers
+issue: NEXT-25560
+author: Mikel Froese
+author_github: alphanyx
+---
+# Core
+* Improved the `PluginFinder` to check for existing Plugins in the `vendor` folder and checking for plugins in `custom/plugins` if they're installed using custom composer/installers.

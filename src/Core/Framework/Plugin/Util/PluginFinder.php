@@ -37,12 +37,12 @@ class PluginFinder
         IOInterface $composerIO
     ): array {
         return array_merge(
-            $this->loadLocalPlugins($pluginDir, $composerIO, $errors),
+            $this->loadLocalPlugins($pluginDir, $projectDir, $composerIO, $errors),
             $this->loadVendorInstalledPlugins($projectDir, $composerIO, $errors),
         );
     }
 
-    private function loadLocalPlugins(string $pluginDir, IOInterface $composerIO, ExceptionCollection $errors): array
+    private function loadLocalPlugins(string $pluginDir, string $projectDir, IOInterface $composerIO, ExceptionCollection $errors): array
     {
         $plugins = [];
 
@@ -53,6 +53,12 @@ class PluginFinder
                 ->in($pluginDir)
                 ->sortByName()
                 ->getIterator();
+
+            $composer = Factory::createComposer($projectDir, $composerIO);
+
+            $composerLocalRepository = $composer
+                ->getRepositoryManager()
+                ->getLocalRepository();
 
             foreach ($filesystemPlugins as $filesystemPlugin) {
                 $pluginPath = $filesystemPlugin->getRealPath();
@@ -72,11 +78,12 @@ class PluginFinder
                 }
 
                 $pluginName = $this->getPluginNameFromPackage($package);
+                $managedByComposer = $composerLocalRepository->hasPackage($package);
 
                 $plugins[$pluginName] = (new PluginFromFileSystemStruct())->assign([
                     'baseClass' => $pluginName,
                     'path' => $filesystemPlugin->getPathname(),
-                    'managedByComposer' => false,
+                    'managedByComposer' => $managedByComposer,
                     'composerPackage' => $package,
                 ]);
             }
@@ -123,6 +130,10 @@ class PluginFinder
             }
 
             $pluginPath = $this->getVendorPluginPath($composerPackage, $composer);
+            if (!file_exists($pluginPath)) {
+                continue;
+            }
+
             if (!$this->isPluginComposerValid($composerPackage)) {
                 $this->addError($pluginPath, $errors);
 

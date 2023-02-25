@@ -55,4 +55,18 @@ class PluginFinderTest extends TestCase
         );
         static::assertTrue($plugins['Works\Works']->getManagedByComposer());
     }
+
+
+    public function testComposerInstallerPluginsCustomPathInstalledPlugins(): void
+    {
+        $plugins = (new PluginFinder(new PackageProvider()))->findPlugins(
+            __DIR__ . '/_fixture/ComposerInstallerProject/custom/plugins',
+            __DIR__ . '/_fixture/ComposerInstallerProject',
+            new ExceptionCollection(),
+            new NullIO()
+        );
+
+        static::assertTrue($plugins['Works\Works']->getManagedByComposer());
+        static::assertEquals(__DIR__ . '/_fixture/ComposerInstallerProject/custom/plugins/SwagTest', $plugins['Works\Works']->getPath());
+    }
 }
