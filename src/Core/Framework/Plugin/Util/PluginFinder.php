@@ -165,7 +165,13 @@ class PluginFinder
 
     private function getVendorPluginPath(CompletePackageInterface $pluginPackage, Composer $composer): string
     {
-        return $composer->getConfig()->get('vendor-dir') . '/' . $pluginPackage->getPrettyName();
+        $packageInstallPath = $composer->getInstallationManager()->getInstallPath($pluginPackage);
+
+        if (strpos($packageInstallPath, $composer->getConfig()->get('vendor-dir')) === false)) {
+            $packageInstallPath = $composer->getConfig()->get('vendor-dir') . '/' . $packageInstallPath;
+        }
+
+        return $packageInstallPath;
     }
 
     private function addError(string $pluginPath, ExceptionCollection $errors): void
